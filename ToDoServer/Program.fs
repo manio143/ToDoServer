@@ -54,11 +54,9 @@ module Main =
             else None ) with
         | Some port ->
             let serverConfig =
-            { Web.defaultConfig with
-                logger = Logging.Loggers.saneDefaultsFor Logging.LogLevel.Warn
-                homeFolder = Some homeDir
-                bindings = [ HttpBinding.mkSimple HTTP "127.0.0.1" port ] }
+                { Web.defaultConfig with
+                    bindings = [ HttpBinding.createSimple HTTP "127.0.0.1" port ] }
             Web.startWebServer serverConfig app
-        | _ -> ()
+        | _ -> Web.startWebServer config app
         0
         
