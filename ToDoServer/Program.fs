@@ -49,6 +49,16 @@ module Main =
                bindings = [ HttpBinding.createSimple HTTP "0.0.0.0" 80 ]
             }
 
-        startWebServer defaultConfig app
+        match System.Environment.GetCommandLineArgs() |> Seq.tryPick (fun s ->
+            if s.StartsWith("port=") then Some(int(s.Substring("port=".Length)))
+            else None ) with
+        | Some port ->
+            let serverConfig =
+            { Web.defaultConfig with
+                logger = Logging.Loggers.saneDefaultsFor Logging.LogLevel.Warn
+                homeFolder = Some homeDir
+                bindings = [ HttpBinding.mkSimple HTTP "127.0.0.1" port ] }
+            Web.startWebServer serverConfig app
+        | _ -> ()
         0
         
